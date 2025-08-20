@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Remote</title>
+  <style>
+    body {
+      font-family: 'Ropa Sans', sans-serif;
+      color: #333;
+      max-width: 640px;
+      margin: 0 auto;
+      position: relative;
+    }
+    #reader {
+      width: 500px;
+    }
+    #result {
+      text-align: center;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <h1>Remote Control</h1>
+  <div id="reader"></div>
+  <div id="result"></div>
+  <hr>
+  <div id="controls" style="display: none;">
+    <h2>Controls</h2>
+    <button id="testButton">Send Test Message</button>
+  </div>
+
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://unpkg.com/html5-qrcode/html5-qrcode.min.js"></script>
+  <script>
+    let socket;
+    let roomId;
+
+    function onScanSuccess(decodedText, decodedResult) {
+      // Handle on success condition with the decoded text or result.
+      console.log(`Scan result: ${decodedText}`, decodedResult);
+
+      // Stop scanning
+      html5QrcodeScanner.clear();
+
+      // Update UI
+      document.getElementById('reader').style.display = 'none';
+      document.getElementById('result').innerHTML = `Connected to room: ${decodedText}`;
+      document.getElementById('controls').style.display = 'block';
+
+      roomId = decodedText;
+
+      // Connect to Socket.IO and join the room
+      socket = io();
+      socket.on('connect', () => {
+        socket.emit('join', roomId);
+        console.log('Connected and joined room:', roomId);
+      });
+    }
+
+    var html5QrcodeScanner = new Html5QrcodeScanner(
+      "reader", { fps: 10, qrbox: 250 });
+    html5QrcodeScanner.render(onScanSuccess);
+
+    // Control logic
+    document.getElementById('testButton').addEventListener('click', () => {
+      if (socket && roomId) {
+        const message = 'Hello from remote!';
+        socket.emit('control_message', { room: roomId, message: message });
+        console.log(`Sent message to room ${roomId}: ${message}`);
+      }
+    });
+
+  </script>
+</body>
+</html>
