@@ -15,9 +15,14 @@ app.use(express.static('public'));
 io.on('connection', (socket) => {
   console.log(`A user connected: ${socket.id}`);
 
-  socket.on('join', (roomId) => {
-    socket.join(roomId);
-    console.log(`Socket ${socket.id} joined room ${roomId}`);
+  socket.on('join', async (data) => {
+    await socket.join(data.roomId);
+    console.log(`Socket ${socket.id} joined room ${data.roomId}`);
+    socket.emit("room_joined", { roomId: data.roomId });
+
+    const sockets = await io.in(data.roomId).fetchSockets();
+    const users = sockets.map(s => s.id);
+    io.to(data.roomId).emit("user_joined", { users });
   });
 
   socket.on('control_message', (data) => {

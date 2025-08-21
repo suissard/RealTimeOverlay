@@ -8,6 +8,7 @@ export const useMainStore = defineStore('main', {
     isRemote: false,
     message: null,
     socket: null,
+    users: [],
   }),
 
   actions: {
@@ -31,9 +32,14 @@ export const useMainStore = defineStore('main', {
         }
       });
 
-      this.socket.on('room_joined', () => {
+      this.socket.on('room_joined', (data) => {
         this.isConnected = true;
-        console.log(`Successfully joined room: ${roomId}`);
+        console.log(`Successfully joined room: ${data.roomId}`);
+      });
+
+      this.socket.on('user_joined', (data) => {
+        this.users = data.users;
+        console.log(`Users in room: ${data.users}`);
       });
 
       this.socket.on('room_left', () => {
