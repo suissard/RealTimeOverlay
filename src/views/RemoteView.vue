@@ -3,10 +3,17 @@
     <h1>Remote Control</h1>
     <div v-if="store.isConnected" class="controls">
       <p>Connected to room: <code>{{ store.roomId }}</code></p>
+      <div v-if="store.room">
+        <p>Users: {{ store.room.users.length }} / {{ store.room.capacity }}</p>
+        <div class="actions">
+          <button @click="store.manageSlots('add')">Add Slot</button>
+          <button @click="store.manageSlots('remove')">Remove Slot</button>
+        </div>
+      </div>
       <input v-model="message" @input="sendMessage" type="text" placeholder="Enter a message" />
     </div>
-    <div v-else-if="error">
-      <p class="error">{{ error }}</p>
+    <div v-else-if="error || store.error">
+      <p class="error">{{ error || store.error }}</p>
     </div>
     <div v-else>
       <p>Connecting to room...</p>
