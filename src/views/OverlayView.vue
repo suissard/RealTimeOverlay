@@ -32,7 +32,7 @@ const remoteUrl = computed(() => {
 onMounted(() => {
   // When the component is mounted, generate a new room ID and connect
   store.generateRoomId();
-  store.connect(store.roomId);
+  store.connect(store.roomId, false);
   window.addEventListener('resize', () => {
     qrSize.value = Math.min(window.innerWidth, window.innerHeight) * 0.9;
   });
