@@ -22,11 +22,3 @@ const layout = computed(() => {
   return layouts[layoutName];
 });
 </script>
-
-<style>
-body {
-  margin: 0;
-  font-family: sans-serif;
-  background-color: #f0f0f0;
-}
-</style>
