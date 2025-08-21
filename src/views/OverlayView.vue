@@ -1,10 +1,15 @@
 <template>
-  <div class="container">
-    <div v-if="store.roomId" class="qr-container">
-      <qrcode-vue :value="remoteUrl" :size="qrSize" level="H" />
+  <div class="container" :class="{ 'connected': store.isConnected }">
+    <div v-if="!store.isConnected">
+      <div v-if="store.roomId" class="qr-container">
+        <qrcode-vue :value="remoteUrl" :size="qrSize" level="H" />
+      </div>
+      <div v-else>
+        <p>Generating session...</p>
+      </div>
     </div>
-    <div v-else>
-      <p>Generating session...</p>
+    <div v-else class="message-container">
+      <p class="message">{{ store.message }}</p>
     </div>
   </div>
 </template>
@@ -41,6 +46,11 @@ onMounted(() => {
   justify-content: center;
   width: 100vw;
   height: 100vh;
+  background-color: #ffffff; /* Default background */
+  transition: background-color 0.5s ease;
+}
+.container.connected {
+  background-color: transparent;
 }
 .qr-container {
   display: flex;
@@ -48,5 +58,19 @@ onMounted(() => {
   justify-content: center;
   width: 100%;
   height: 100%;
+}
+.message-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+.message {
+  font-size: 10rem;
+  font-weight: bold;
+  color: #000000;
+  text-align: center;
+  padding: 2rem;
 }
 </style>

@@ -3,8 +3,7 @@
     <h1>Remote Control</h1>
     <div v-if="store.isConnected" class="controls">
       <p>Connected to room: <code>{{ store.roomId }}</code></p>
-      <input v-model="message" @keyup.enter="sendMessage" type="text" placeholder="Enter a message" />
-      <button @click="sendMessage">Send Message</button>
+      <input v-model="message" @input="sendMessage" type="text" placeholder="Enter a message" />
     </div>
     <div v-else-if="error">
       <p class="error">{{ error }}</p>
@@ -22,7 +21,7 @@ import { useMainStore } from '../stores/main';
 
 const store = useMainStore();
 const route = useRoute();
-const message = ref('Hello from the remote!');
+const message = ref('');
 const error = ref(null);
 
 onMounted(() => {
@@ -37,10 +36,10 @@ onMounted(() => {
 });
 
 const sendMessage = () => {
-  if (message.value && store.isConnected) {
+  if (store.isConnected) {
     store.sendMessage(message.value);
   } else {
-    console.warn('Cannot send message, not connected or message is empty.');
+    console.warn('Cannot send message, not connected.');
   }
 };
 </script>
