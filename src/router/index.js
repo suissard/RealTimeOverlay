@@ -12,12 +12,14 @@ const routes = [
   {
     path: '/overlay',
     name: 'Overlay',
-    component: OverlayView
+    component: OverlayView,
+    meta: { layout: 'MainLayout' }
   },
   {
     path: '/remote',
     name: 'Remote',
-    component: RemoteView
+    component: RemoteView,
+    meta: { layout: 'MainLayout' }
   }
 ]
 
