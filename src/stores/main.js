@@ -18,7 +18,7 @@ export const useMainStore = defineStore('main', {
     },
 
     connect(roomId) {
-      this.socket = io();
+      this.socket = io('http://localhost:3000');
 
       this.socket.on('connect', () => {
         this.isConnected = true;
