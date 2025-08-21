@@ -28,7 +28,7 @@ onMounted(() => {
   const roomId = route.query.roomId;
   if (roomId) {
     store.roomId = roomId;
-    store.connect(roomId);
+    store.connect(roomId, true);
   } else {
     error.value = 'Error: No Room ID was provided in the URL. Please scan the QR code again.';
     console.error(error.value);

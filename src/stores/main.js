@@ -5,6 +5,7 @@ export const useMainStore = defineStore('main', {
   state: () => ({
     roomId: null,
     isConnected: false,
+    isRemote: false,
     message: null,
     socket: null,
   }),
@@ -17,14 +18,27 @@ export const useMainStore = defineStore('main', {
       });
     },
 
-    connect(roomId) {
+   connect(roomId, isRemote = false) {
+      this.isRemote = isRemote;
       this.socket = io('http://localhost:3000');
 
       this.socket.on('connect', () => {
-        this.isConnected = true;
         console.log(`Connected to socket server with id: ${this.socket.id}`);
-        this.socket.emit('join', roomId);
-        console.log(`Joined room: ${roomId}`);
+        this.socket.emit('join', { roomId, isRemote });
+        console.log(`Sent join request for room: ${roomId}`);
+        if (this.isRemote) {
+          this.isConnected = true;
+        }
+      });
+
+      this.socket.on('room_joined', () => {
+        this.isConnected = true;
+        console.log(`Successfully joined room: ${roomId}`);
+      });
+
+      this.socket.on('room_left', () => {
+        this.isConnected = false;
+        console.log(`A user left room: ${roomId}`);
       });
 
       this.socket.on('disconnect', () => {
