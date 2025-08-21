@@ -8,6 +8,8 @@ export const useMainStore = defineStore('main', {
     isRemote: false,
     message: null,
     socket: null,
+    room: null,
+    error: null,
   }),
 
   actions: {
@@ -31,8 +33,9 @@ export const useMainStore = defineStore('main', {
         }
       });
 
-      this.socket.on('room_joined', () => {
+      this.socket.on('room_joined', (room) => {
         this.isConnected = true;
+        this.room = room;
         console.log(`Successfully joined room: ${roomId}`);
       });
 
@@ -50,6 +53,16 @@ export const useMainStore = defineStore('main', {
         console.log('Control message received:', msg);
         this.message = msg;
       });
+
+      this.socket.on('room_full', () => {
+        this.error = 'This room is full.';
+        console.error(this.error);
+      });
+
+      this.socket.on('room_updated', (room) => {
+        this.room = room;
+        console.log('Room updated:', room);
+      });
     },
 
     sendMessage(message) {
@@ -57,6 +70,16 @@ export const useMainStore = defineStore('main', {
         const payload = { room: this.roomId, message: message };
         this.socket.emit('control_message', payload);
         console.log(`Sent message to room ${this.roomId}:`, message);
+      } else {
+        console.error('Socket not connected or roomId not set.');
+      }
+    },
+
+    manageSlots(action) {
+      if (this.socket && this.roomId) {
+        const payload = { roomId: this.roomId, action };
+        this.socket.emit('manage_slots', payload);
+        console.log(`Sent manage_slots request for room ${this.roomId}:`, action);
       } else {
         console.error('Socket not connected or roomId not set.');
       }
