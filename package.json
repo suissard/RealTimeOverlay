@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "test": "vitest"
+    "test": "vitest",
+    "start": "node index.js",
+    "prod": "npm run build && npm run start"
   },
   "repository": {
     "type": "git",
