@@ -2,12 +2,12 @@
   "name": "app",
   "version": "1.0.0",
   "description": "Overlay commandé en temps réel via websocket",
-  "main": "index.js",
+  "main": "server/index.js",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"vite\" \"npm:start\"",
     "build": "vite build",
     "test": "vitest",
-    "start": "node index.js",
+    "start": "node server/index.js",
     "prod": "npm run build && npm run start"
   },
   "repository": {
@@ -34,7 +34,9 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.1",
     "autoprefixer": "^10.4.21",
+    "concurrently": "^9.2.0",
     "daisyui": "^5.0.50",
+    "node-fetch": "^3.3.2",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.17",
     "vite": "^7.1.3",
