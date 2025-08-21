@@ -6,14 +6,9 @@ import RemoteView from '../views/RemoteView.vue'
 const routes = [
   {
     path: '/',
-    name: 'Home',
-    component: HomeView
-  },
-  {
-    path: '/overlay',
     name: 'Overlay',
     component: OverlayView,
-    meta: { layout: 'MainLayout' }
+    meta: { layout: 'BlankLayout' }
   },
   {
     path: '/remote',
