@@ -8,8 +8,10 @@ export const useMainStore = defineStore('main', {
     isRemote: false,
     message: null,
     socket: null,
+    users: [],
     room: null,
     error: null,
+
   }),
 
   actions: {
