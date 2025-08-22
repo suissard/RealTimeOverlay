@@ -1,6 +1,6 @@
 <template>
   <div>
-    {{ store.room }}
+    {{ useMainStore.message }}
     <div v-if="store.room?.users.length <= 1">
       <div v-if="store.roomId" class="qr-container">
         <qrcode-vue :value="remoteUrl" :size="qrSize" level="H" type="image/webp" />
@@ -31,7 +31,7 @@ import OverlayObject from '@/components/OverlayObject.vue'
 import QrcodeVue from 'vue-qrcode';
 
 const store = useMainStore();
-const qrSize = ref(Math.min(window.innerWidth, window.innerHeight) * 10.9);
+const qrSize = ref(Math.min(window.innerWidth, window.innerHeight) * 0.9);
 
 
 const remoteUrl = computed(() => {
