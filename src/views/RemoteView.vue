@@ -5,6 +5,7 @@ import { useMainStore } from '@/stores/main'
 import { useOverlayStore } from '@/stores/overlay'
 import { storeToRefs } from 'pinia'
 import { throttle } from 'lodash'
+import OverlayEditor from '@/components/OverlayEditor.vue'
 
 const route = useRoute()
 const mainStore = useMainStore()
@@ -15,10 +16,17 @@ const { overlays } = storeToRefs(overlayStore)
 
 const error = ref(null)
 const newOverlayName = ref('')
+const activeTab = ref('general')
+const selectedOverlayId = ref(null)
 
 const hasOverlay = computed(() => {
   if (!room.value) return false
   return room.value.users.some(u => !u.isRemote)
+})
+
+const selectedOverlay = computed(() => {
+  if (!selectedOverlayId.value) return null
+  return overlays.value.find(o => o.id === selectedOverlayId.value)
 })
 
 onMounted(() => {
@@ -44,12 +52,15 @@ const createOverlay = () => {
   }
 }
 
-const updateOverlay = (id, data) => {
-  overlayStore.updateOverlay(id, data)
+const deleteOverlay = (id) => {
+  if (selectedOverlayId.value === id) {
+    selectedOverlayId.value = null
+  }
+  overlayStore.removeOverlay(id)
 }
 
-const deleteOverlay = (id) => {
-  overlayStore.removeOverlay(id)
+const selectOverlay = (id) => {
+  selectedOverlayId.value = id
 }
 </script>
 
@@ -74,51 +85,62 @@ const deleteOverlay = (id) => {
         </div>
       </div>
 
-      <div v-if="hasOverlay" class="controls space-y-2">
-        <input
-          type="text"
-          class="input input-bordered w-full"
-          placeholder="Message"
-          @input="onInput"
-        />
-        <div class="flex gap-2">
-          <button class="btn btn-primary" @click="manageSlots('add')">Add Slot</button>
-          <button class="btn btn-secondary" @click="manageSlots('remove')">Remove Slot</button>
-        </div>
+      <div class="tabs tabs-boxed">
+        <a class="tab" :class="{ 'tab-active': activeTab === 'general' }" @click="activeTab = 'general'">General</a>
+        <a class="tab" :class="{ 'tab-active': activeTab === 'editor' }" @click="activeTab = 'editor'">Editor</a>
       </div>
-    </div>
 
-    <div class="divider"></div>
-
-    <div class="space-y-4">
-      <h2 class="text-xl font-bold">Overlays</h2>
-      <form @submit.prevent="createOverlay" class="flex gap-2">
-        <input
-          id="newName"
-          v-model="newOverlayName"
-          type="text"
-          class="input input-bordered w-full"
-          placeholder="New Overlay Name"
-        />
-        <button type="submit" class="btn btn-primary">Create</button>
-      </form>
-
-      <ul class="space-y-2">
-        <li v-for="overlay in overlays" :key="overlay.id" :data-overlay-id="overlay.id" class="overlay-editor flex items-center gap-2 p-2 bg-base-200 rounded">
+      <div v-show="activeTab === 'general'">
+        <div v-if="hasOverlay" class="controls space-y-2">
           <input
-            :id="`name-${overlay.id}`"
-            :value="overlay.name"
             type="text"
             class="input input-bordered w-full"
-            @input="updateOverlay(overlay.id, { name: $event.target.value })"
+            placeholder="Message"
+            @input="onInput"
           />
-          <div class="button-group">
-            <button class="btn btn-ghost" @click="deleteOverlay(overlay.id)">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-            </button>
+          <div class="flex gap-2">
+            <button class="btn btn-primary" @click="manageSlots('add')">Add Slot</button>
+            <button class="btn btn-secondary" @click="manageSlots('remove')">Remove Slot</button>
           </div>
-        </li>
-      </ul>
+        </div>
+        <div class="divider"></div>
+        <div class="space-y-4">
+          <h2 class="text-xl font-bold">Overlays</h2>
+          <form @submit.prevent="createOverlay" class="flex gap-2">
+            <input
+              id="newName"
+              v-model="newOverlayName"
+              type="text"
+              class="input input-bordered w-full"
+              placeholder="New Overlay Name"
+            />
+            <button type="submit" class="btn btn-primary">Create</button>
+          </form>
+        </div>
+      </div>
+
+      <div v-show="activeTab === 'editor'" class="space-y-4">
+        <h2 class="text-xl font-bold">Overlay Editor</h2>
+        <div class="flex gap-4">
+          <div class="w-1/4">
+            <ul class="menu bg-base-200 rounded-box">
+              <li v-for="overlay in overlays" :key="overlay.id">
+                <a @click="selectOverlay(overlay.id)" :class="{ 'active': selectedOverlayId === overlay.id }">
+                  {{ overlay.name }}
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div class="w-3/4">
+            <div v-if="selectedOverlay">
+              <OverlayEditor :overlay="selectedOverlay" />
+            </div>
+            <div v-else class="text-center p-8">
+              <p>Select an overlay to edit.</p>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
