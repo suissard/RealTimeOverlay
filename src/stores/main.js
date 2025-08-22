@@ -76,7 +76,7 @@ export const useMainStore = defineStore('main', {
 
     sendMessage(message) {
       if (this.socket && this.roomId) {
-        const payload = { room: this.room.id, message: { type: 'text', content: message } };
+        const payload = { room: this.roomId, message: { type: 'text', content: message } };
         this.socket.emit('control_message', payload);
         console.log(`Sent message to room ${this.roomId}:`, message);
       } else {
