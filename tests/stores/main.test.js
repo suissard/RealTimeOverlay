@@ -66,7 +66,7 @@ describe('Pinia Store: main', () => {
 
     store.sendMessage('hello')
 
-    expect(emit).toHaveBeenCalledWith('control_message', { room: 'test-room', message: 'hello'})
+    expect(emit).toHaveBeenCalledWith('control_message', { room: 'test-room', message: { type: 'text', content: 'hello' }})
   })
 
   it('manageSlots action should emit manage_slots', () => {
