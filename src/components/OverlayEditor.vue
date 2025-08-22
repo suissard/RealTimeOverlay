@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import { useOverlayStore } from '@/stores/overlay'
+import { useMainStore } from '@/stores/main'
 
 const props = defineProps({
   overlay: {
@@ -10,11 +11,16 @@ const props = defineProps({
 })
 
 const overlayStore = useOverlayStore()
+const mainStore = useMainStore()
 
 const editableOverlay = ref(JSON.parse(JSON.stringify(props.overlay)))
 
 const updateOverlay = () => {
   overlayStore.updateOverlay(editableOverlay.value.id, editableOverlay.value)
+}
+
+const sendOverlay = () => {
+  mainStore.sendOverlay(editableOverlay.value)
 }
 
 const previewContent = computed(() => {
@@ -85,6 +91,7 @@ watch(() => props.overlay, (newOverlay) => {
           <label class="label">JS</label>
           <textarea v-model="editableOverlay.js" @input="updateOverlay" class="textarea textarea-bordered w-full" rows="5" data-testid="js-input"></textarea>
         </div>
+        <button @click="sendOverlay" class="btn btn-primary w-full">Send Overlay</button>
       </div>
       <div class="preview">
         <h3 class="text-lg font-bold mb-2">Preview</h3>
