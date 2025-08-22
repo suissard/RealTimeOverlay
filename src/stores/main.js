@@ -14,6 +14,12 @@ export const useMainStore = defineStore('main', {
 
   }),
 
+  getters: {
+    hasOverlays(state) {
+      return state.room ? state.room.users.some(user => !user.isRemote) : false;
+    }
+  },
+
   actions: {
     generateRoomId() {
       this.roomId = 'xxxx-xxxx-xxxx-xxxx'.replace(/[xy]/g, function(c) {

@@ -37,12 +37,12 @@ describe('RemoteView.vue', () => {
     expect(wrapper.text()).toContain('Connecting to room...')
   })
 
-  it('displays controls when connected', async () => {
+  it('displays controls when connected with an overlay', async () => {
     mockUseRoute.query = { roomId: 'test-room' }
     const store = useMainStore()
     store.isConnected = true
     store.roomId = 'test-room'
-    store.room = { users: [], capacity: 2 }
+    store.room = { users: [{ id: 'overlay1', isRemote: false }], capacity: 2 } // Mock an overlay user
 
     const wrapper = mount(RemoteView)
 
@@ -52,11 +52,27 @@ describe('RemoteView.vue', () => {
     expect(wrapper.text()).toContain('Connected to room: test-room')
   })
 
+  it('shows "Waiting for an overlay..." message when connected but no overlays are present', async () => {
+    mockUseRoute.query = { roomId: 'test-room' }
+    const store = useMainStore()
+    store.isConnected = true
+    store.roomId = 'test-room'
+    store.room = { users: [{ id: 'remote1', isRemote: true }], capacity: 2 } // Only remote user
+
+    const wrapper = mount(RemoteView)
+
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.find('.controls').exists()).toBe(false)
+    expect(wrapper.text()).toContain('En attente de connexion à un overlay...')
+  })
+
   it('calls sendMessage on input', async () => {
     mockUseRoute.query = { roomId: 'test-room' }
     const store = useMainStore()
     const sendMessageSpy = vi.spyOn(store, 'sendMessage')
     store.isConnected = true
+    store.room = { users: [{ id: 'overlay1', isRemote: false }], capacity: 2 } // Mock an overlay user
 
     const wrapper = mount(RemoteView)
 
@@ -73,7 +89,7 @@ describe('RemoteView.vue', () => {
     const store = useMainStore()
     const manageSlotsSpy = vi.spyOn(store, 'manageSlots')
     store.isConnected = true
-    store.room = { users: [], capacity: 2 }
+    store.room = { users: [{ id: 'overlay1', isRemote: false }], capacity: 2 } // Mock an overlay user
 
     const wrapper = mount(RemoteView)
 
