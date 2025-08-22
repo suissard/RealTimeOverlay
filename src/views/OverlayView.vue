@@ -1,6 +1,6 @@
 <template>
   <div class="container" :class="{ 'connected': store.isConnected }">
-    <div v-if="!store.isConnected">
+    <div v-if="store.room?.users.length <= 1">
       <div v-if="store.roomId" class="qr-container">
         <qrcode-vue :value="remoteUrl" :size="qrSize" level="H" />
       </div>
