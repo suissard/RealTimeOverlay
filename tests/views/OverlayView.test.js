@@ -1,46 +1,26 @@
-import { describe, it, expect, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
-import OverlayView from '../../src/views/OverlayView.vue'
-import { useMainStore } from '../../src/stores/main'
-
-vi.mock('vue-qrcode', () => ({
-  default: {
-    name: 'QrcodeVue',
-    template: '<div class="mock-qrcode">Mock QR Code</div>'
-  }
-}))
+import { describe, it, expect, beforeEach } from 'vitest';
+import { mount } from '@vue/test-utils';
+import { createPinia, setActivePinia } from 'pinia';
+import OverlayView from '../../src/views/OverlayView.vue';
+import { useOverlayStore } from '../../src/stores/overlay';
+import OverlayObject from '../../src/components/OverlayObject.vue';
 
 describe('OverlayView.vue', () => {
-  it('shows generating session message when roomId is null', () => {
-    const store = useMainStore()
-    store.roomId = null
-    const wrapper = mount(OverlayView)
-    expect(wrapper.text()).toContain('Generating session...')
-  })
+  beforeEach(() => {
+    setActivePinia(createPinia());
+  });
 
-  it('displays QR code when roomId is available but not connected', async () => {
-    const store = useMainStore()
-    store.roomId = 'test-room'
-    store.isConnected = false
+  it('should render no overlays if the store is empty', () => {
+    const wrapper = mount(OverlayView);
+    expect(wrapper.findAllComponents(OverlayObject)).toHaveLength(0);
+  });
 
-    const wrapper = mount(OverlayView)
+  it('should render overlays from the store', () => {
+    const overlayStore = useOverlayStore();
+    overlayStore.addOverlay({ name: 'Test 1' });
+    overlayStore.addOverlay({ name: 'Test 2' });
 
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.find('.mock-qrcode').exists()).toBe(true)
-    expect(wrapper.text()).toContain('Mock QR Code')
-  })
-
-  it('displays the message when connected', async () => {
-    const store = useMainStore()
-    store.isConnected = true
-    store.message = 'Test Message'
-
-    const wrapper = mount(OverlayView)
-
-    await wrapper.vm.$nextTick()
-
-    expect(wrapper.find('.message').text()).toBe('Test Message')
-    expect(wrapper.find('.mock-qrcode').exists()).toBe(false)
-  })
-})
+    const wrapper = mount(OverlayView);
+    expect(wrapper.findAllComponents(OverlayObject)).toHaveLength(2);
+  });
+});
