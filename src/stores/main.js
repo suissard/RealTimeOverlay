@@ -44,6 +44,7 @@ export const useMainStore = defineStore('main', {
       this.socket.on('room_joined', (room) => {
         this.isConnected = true;
         this.room = room;
+        this.roomId = roomId;
         console.log(`Successfully joined room: ${roomId}`);
       });
 
@@ -75,9 +76,19 @@ export const useMainStore = defineStore('main', {
 
     sendMessage(message) {
       if (this.socket && this.roomId) {
-        const payload = { room: this.roomId, message: message };
+        const payload = { room: this.roomId, message: { type: 'text', content: message } };
         this.socket.emit('control_message', payload);
         console.log(`Sent message to room ${this.roomId}:`, message);
+      } else {
+        console.error('Socket not connected or roomId not set.');
+      }
+    },
+
+    sendOverlay(overlay) {
+      if (this.socket && this.room) {
+        const payload = { room: this.room.id, message: { type: 'overlay', content: overlay } };
+        this.socket.emit('control_message', payload);
+        console.log(`Sent overlay to room ${this.roomId}:`, overlay);
       } else {
         console.error('Socket not connected or roomId not set.');
       }
