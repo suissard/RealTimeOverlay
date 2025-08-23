@@ -38,9 +38,29 @@ const previewContent = computed(() => {
   `
 })
 
+const handleJsonEdit = (key, value) => {
+  try {
+    editableOverlay.value.props[key] = JSON.parse(value)
+    updateOverlay()
+  } catch (e) {
+    console.error("Invalid JSON format", e)
+    // Optionally, provide user feedback here
+  }
+}
+
 watch(() => props.overlay, (newOverlay) => {
   editableOverlay.value = JSON.parse(JSON.stringify(newOverlay))
-}, { deep: true })
+  // Ensure props is an object
+  if (typeof editableOverlay.value.props !== 'object' || editableOverlay.value.props === null) {
+    try {
+      // Attempt to parse it if it's a string
+      editableOverlay.value.props = JSON.parse(editableOverlay.value.props)
+    } catch (e) {
+      // If parsing fails, initialize as an empty object
+      editableOverlay.value.props = {}
+    }
+  }
+}, { deep: true, immediate: true })
 </script>
 
 <template>
@@ -76,8 +96,27 @@ watch(() => props.overlay, (newOverlay) => {
           <input type="text" v-model="editableOverlay.parent" @input="updateOverlay" class="input input-bordered w-full" />
         </div>
         <div>
-          <label class="label">Props (JSON)</label>
-          <textarea v-model="editableOverlay.props" @input="updateOverlay" class="textarea textarea-bordered w-full" rows="3" data-testid="props-input"></textarea>
+          <label class="label">Props</label>
+          <div v-if="editableOverlay.props" class="props-grid space-y-2 p-2 border border-base-300 rounded-box">
+            <div v-for="(value, key) in editableOverlay.props" :key="key" class="form-control">
+              <label class="label">
+                <span class="label-text capitalize">{{ key.replace(/([A-Z])/g, ' $1') }}</span>
+              </label>
+
+              <!-- Input for numbers -->
+              <input v-if="typeof value === 'number'" type="number" v-model.number="editableOverlay.props[key]" @input="updateOverlay" class="input input-sm input-bordered w-full" />
+
+              <!-- Input for booleans -->
+              <input v-else-if="typeof value === 'boolean'" type="checkbox" v-model="editableOverlay.props[key]" @change="updateOverlay" class="checkbox" />
+
+              <!-- Textarea for arrays/objects -->
+              <textarea v-else-if="typeof value === 'object' && value !== null" :value="JSON.stringify(value, null, 2)" @change="e => handleJsonEdit(key, e.target.value)" class="textarea textarea-sm textarea-bordered w-full" rows="3"></textarea>
+
+              <!-- Input for strings -->
+              <input v-else type="text" v-model="editableOverlay.props[key]" @input="updateOverlay" class="input input-sm input-bordered w-full" />
+
+            </div>
+          </div>
         </div>
         <div>
           <label class="label">HTML</label>

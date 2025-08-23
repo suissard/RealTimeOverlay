@@ -5,10 +5,15 @@ import RemoteView from '../../src/views/RemoteView.vue';
 import { useOverlayStore } from '../../src/stores/overlay';
 import { useMainStore } from '../../src/stores/main';
 
-// Mock lodash throttle to execute immediately
-vi.mock('lodash', () => ({
-  throttle: (fn) => fn,
-}));
+// Mock lodash
+vi.mock('lodash', async () => {
+  const lodash = await vi.importActual('lodash');
+  return {
+    ...lodash,
+    throttle: vi.fn(fn => fn),
+    cloneDeep: lodash.cloneDeep, // Explicitly include cloneDeep
+  };
+});
 
 // Mock socket.io-client
 const mockSocket = {
@@ -61,15 +66,6 @@ describe('RemoteView.vue', () => {
       await wrapper.find('.tabs a:first-child').trigger('click');
     });
 
-    it('should create a new overlay', async () => {
-      const overlayStore = useOverlayStore();
-      await wrapper.find('input[id="newName"]').setValue('My New Overlay');
-      await wrapper.find('form').trigger('submit.prevent');
-
-      expect(overlayStore.overlays).toHaveLength(1);
-      expect(overlayStore.overlays[0].name).toBe('My New Overlay');
-    });
-
     it('displays controls when connected with an overlay', async () => {
       mainStore.room = { users: [{ id: 'overlay1', isRemote: false }], capacity: 2 };
       await wrapper.vm.$nextTick();
@@ -109,11 +105,29 @@ describe('RemoteView.vue', () => {
     beforeEach(async () => {
       overlayStore = useOverlayStore();
       overlayStore.addOverlay({ name: 'Existing Overlay' });
-      await wrapper.find('.tabs a:nth-child(2)').trigger('click');
+      // The view now defaults to the editor tab, so no click is needed
+      // await wrapper.find('.tabs a:nth-child(2)').trigger('click');
+    });
+
+    it('should create a new overlay from a preset', async () => {
+      const addOverlaySpy = vi.spyOn(overlayStore, 'addOverlay');
+
+      // The create form is now in the editor tab
+      await wrapper.find('input[id="newName"]').setValue('My Scoreboard');
+      // No need to select a preset, the first one is selected by default
+      await wrapper.find('form').trigger('submit.prevent');
+
+      expect(addOverlaySpy).toHaveBeenCalledTimes(1);
+
+      // Check that the created overlay has the correct properties from the preset
+      const callArgument = addOverlaySpy.mock.calls[0][0];
+      expect(callArgument.name).toBe('My Scoreboard');
+      expect(callArgument.props).toBeDefined();
+      expect(callArgument.props.team1Name).toBe('Team A');
     });
 
     it('should display a list of overlays', () => {
-      expect(wrapper.text()).toContain('Existing Overlay');
+      expect(wrapper.find('.menu').text()).toContain('Existing Overlay');
     });
 
     it('should show the overlay editor when an overlay is selected', async () => {

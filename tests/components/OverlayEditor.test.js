@@ -16,7 +16,13 @@ describe('OverlayEditor.vue', () => {
       name: 'Test Overlay',
       html: '<h1>Test</h1>',
       css: 'h1 { color: red; }',
-      js: 'console.log("test")'
+      js: 'console.log("test")',
+      props: {
+        aString: 'hello',
+        aNumber: 123,
+        aBoolean: true,
+        anObject: { nested: 'value' }
+      }
     });
 
     wrapper = mount(OverlayEditor, {
@@ -29,9 +35,29 @@ describe('OverlayEditor.vue', () => {
   });
 
   it('renders all form fields with the correct initial values', () => {
-    expect(wrapper.find('input[type="text"]').element.value).toBe('Test Overlay');
-    expect(wrapper.find('input[type="number"]').element.value).toBe('0');
-    expect(wrapper.find('[data-testid="props-input"]').element.value).toBe('');
+    // Check main fields
+    const nameInput = wrapper.findAll('input[type="text"]').find(i => i.element.value === 'Test Overlay');
+    expect(nameInput.exists()).toBe(true);
+
+    // Check dynamic props fields
+    const propsGrid = wrapper.find('.props-grid');
+    expect(propsGrid.exists()).toBe(true);
+
+    // String prop
+    const stringInput = propsGrid.findAll('input[type="text"]').find(i => i.element.value === 'hello');
+    expect(stringInput.exists()).toBe(true);
+
+    // Number prop
+    const numberInput = propsGrid.find('input[type="number"]');
+    expect(numberInput.element.value).toBe('123');
+
+    // Boolean prop
+    const booleanInput = propsGrid.find('input[type="checkbox"]');
+    expect(booleanInput.element.checked).toBe(true);
+
+    // Object prop (textarea)
+    const objectTextarea = propsGrid.find('textarea');
+    expect(JSON.parse(objectTextarea.element.value)).toEqual({ nested: 'value' });
   });
 
   it('calls updateOverlay on input', async () => {
