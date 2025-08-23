@@ -61,6 +61,10 @@ watch(() => props.overlay, (newOverlay) => {
     }
   }
 }, { deep: true, immediate: true })
+
+watch(editableOverlay, (newVal) => {
+  updateOverlay()
+}, { deep: true })
 </script>
 
 <template>
