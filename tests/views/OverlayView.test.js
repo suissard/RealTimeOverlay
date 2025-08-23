@@ -31,6 +31,7 @@ describe('OverlayView.vue', () => {
 
     mockRouter = {
       push: vi.fn(),
+      replace: vi.fn(() => Promise.resolve()), // Add replace mock
     };
 
     useRouter.mockReturnValue(mockRouter);
@@ -40,9 +41,10 @@ describe('OverlayView.vue', () => {
     useRoute.mockReturnValue({ query: {} });
 
     const wrapper = mount(OverlayView);
+    await nextTick(); // Wait for the promise in onMounted to resolve
 
     expect(generateRoomIdSpy).toHaveBeenCalled();
-    expect(mockRouter.push).toHaveBeenCalledWith({ query: { roomId: 'mock-room-id' } });
+    expect(mockRouter.replace).toHaveBeenCalledWith({ query: { roomId: 'mock-room-id' } });
   });
 
   it('should connect with the roomId from the query', async () => {
@@ -50,6 +52,7 @@ describe('OverlayView.vue', () => {
     useRoute.mockReturnValue({ query: { roomId } });
 
     const wrapper = mount(OverlayView);
+    await nextTick();
 
     expect(mainStore.roomId).toBe(roomId);
     expect(connectSpy).toHaveBeenCalledWith(roomId, false);
