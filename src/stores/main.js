@@ -44,6 +44,7 @@ export const useMainStore = defineStore('main', {
       this.socket.on('room_joined', (room) => {
         this.isConnected = true;
         this.room = room;
+        this.roomId = roomId;
         console.log(`Successfully joined room: ${roomId}`);
       });
 
@@ -84,8 +85,8 @@ export const useMainStore = defineStore('main', {
     },
 
     sendOverlay(overlay) {
-      if (this.socket && this.roomId) {
-        const payload = { room: this.roomId, message: { type: 'overlay', content: overlay } };
+      if (this.socket && this.room) {
+        const payload = { room: this.room.id, message: { type: 'overlay', content: overlay } };
         this.socket.emit('control_message', payload);
         console.log(`Sent overlay to room ${this.roomId}:`, overlay);
       } else {

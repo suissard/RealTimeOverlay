@@ -22,6 +22,7 @@ io.on('connection', (socket) => {
       rooms[roomId] = {
         users: [],
         capacity: 2,
+        id: roomId
       };
     }
 
