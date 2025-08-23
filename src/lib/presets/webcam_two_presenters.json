@@ -1,0 +1,22 @@
+{
+  "name": "Webcam (2 Presenters)",
+  "type": "webcam_two_presenters",
+  "initialData": {
+    "name": "Webcams",
+    "props": {
+      "presenter1Name": "Presenter 1",
+      "presenter2Name": "Presenter 2",
+      "borderColor": "#4F46E5",
+      "textColor": "#ffffff"
+    },
+    "html": "<div class=\"webcam-container\"><div class=\"webcam-slot\" id=\"cam1\"><div class=\"nameplate\">{{ props.presenter1Name }}</div></div><div class=\"webcam-slot\" id=\"cam2\"><div class=\"nameplate\">{{ props.presenter2Name }}</div></div></div>",
+    "css": ".webcam-container { display: flex; justify-content: space-between; width: 100%; height: 100%; gap: 10px; } .webcam-slot { flex-grow: 1; background-color: #1f2937; border: 3px solid; border-color: var(--border-color, #4F46E5); border-radius: 8px; position: relative; overflow: hidden; box-sizing: border-box; } .nameplate { position: absolute; bottom: 10px; left: 10px; background-color: rgba(0,0,0,0.7); color: var(--text-color, #ffffff); padding: 5px 10px; border-radius: 5px; font-family: sans-serif; font-size: 18px; }",
+    "js": "const root = document.documentElement; root.style.setProperty('--border-color', window.overlayProps.borderColor); root.style.setProperty('--text-color', window.overlayProps.textColor);",
+    "positionX": 470,
+    "positionY": 750,
+    "container": [
+      980,
+      270
+    ]
+  }
+}

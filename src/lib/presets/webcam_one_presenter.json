@@ -1,0 +1,21 @@
+{
+  "name": "Webcam (1 Presenter)",
+  "type": "webcam_one_presenter",
+  "initialData": {
+    "name": "Webcam",
+    "props": {
+      "presenterName": "Presenter Name",
+      "borderColor": "#4F46E5",
+      "textColor": "#ffffff"
+    },
+    "html": "<div class=\"webcam-frame\"><div class=\"nameplate\">{{ props.presenterName }}</div></div>",
+    "css": ".webcam-frame { width: 100%; height: 100%; background-color: #1f2937; border: 3px solid; border-color: var(--border-color, #4F46E5); border-radius: 8px; position: relative; overflow: hidden; box-sizing: border-box; } .nameplate { position: absolute; bottom: 10px; left: 10px; background-color: rgba(0,0,0,0.7); color: var(--text-color, #ffffff); padding: 5px 10px; border-radius: 5px; font-family: sans-serif; font-size: 18px; }",
+    "js": "const root = document.documentElement; root.style.setProperty('--border-color', window.overlayProps.borderColor); root.style.setProperty('--text-color', window.overlayProps.textColor);",
+    "positionX": 50,
+    "positionY": 670,
+    "container": [
+      480,
+      270
+    ]
+  }
+}
