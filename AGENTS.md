@@ -16,6 +16,7 @@ Welcome, AI agent! This file contains instructions to help you work with this co
 *   This is a Vue.js project.
 *   Use `npm install` to install dependencies.
 *   Use `npm run test` to run tests.
+*   Use `npm run build` to build the application.
 *   Use `npm run dev` to start the development server.
 *   The main application entry point is `src/main.js`.
 *   Components are located in `src/views` and `src/components` (if it exists).

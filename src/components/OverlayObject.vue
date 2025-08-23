@@ -36,8 +36,8 @@ const updateStyle = () => {
 const runJs = () => {
   if (props.overlay.js) {
     try {
-      // eslint-disable-next-line no-eval
-      eval(props.overlay.js);
+      const func = new Function(props.overlay.js);
+      func();
     } catch (error) {
       console.error('Error executing overlay JS:', error);
     }

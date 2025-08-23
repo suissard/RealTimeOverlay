@@ -6,6 +6,7 @@ import { useOverlayStore } from '@/stores/overlay'
 import { storeToRefs } from 'pinia'
 import { throttle, cloneDeep } from 'lodash'
 import OverlayEditor from '@/components/OverlayEditor.vue'
+import FakeScreen from '@/components/FakeScreen.vue'
 import { presets } from '@/lib/presets'
 
 const route = useRoute()
@@ -80,6 +81,10 @@ const deleteOverlay = (id) => {
 
 const selectOverlay = (id) => {
   selectedOverlayId.value = id
+}
+
+const handleOverlayUpdate = (updatedOverlay) => {
+  overlayStore.updateOverlay(updatedOverlay.id, updatedOverlay)
 }
 </script>
 
@@ -171,7 +176,14 @@ const selectOverlay = (id) => {
           </div>
 
           <!-- Right Column: Editor -->
-          <div class="md:col-span-2">
+          <div class="md:col-span-2 grid grid-rows-2 gap-4">
+            <div class="bg-base-200 rounded-box">
+              <FakeScreen
+                v-if="selectedOverlay"
+                :overlay="selectedOverlay"
+                @update:overlay="handleOverlayUpdate"
+              />
+            </div>
             <div v-if="selectedOverlay">
               <OverlayEditor :overlay="selectedOverlay" />
             </div>
