@@ -1,0 +1,26 @@
+{
+  "name": "Score Bar",
+  "type": "score_bar",
+  "initialData": {
+    "name": "Score Bar",
+    "props": {
+      "team1Name": "Team A",
+      "team2Name": "Team B",
+      "team1Score": 0,
+      "team2Score": 0,
+      "team1Logo": "",
+      "team2Logo": "",
+      "backgroundColor": "rgba(29, 38, 51, 0.8)",
+      "textColor": "#ffffff"
+    },
+    "html": "\n        <div class=\"scoreboard\">\n          <div class=\"team\">\n            <img :src=\"props.team1Logo\" class=\"logo\" v-if=\"props.team1Logo\" />\n            <span class=\"name\">{{ props.team1Name }}</span>\n            <span class=\"score\">{{ props.team1Score }}</span>\n          </div>\n          <div class=\"separator\">-</div>\n          <div class=\"team\">\n            <span class=\"score\">{{ props.team2Score }}</span>\n            <span class=\"name\">{{ props.team2Name }}</span>\n            <img :src=\"props.team2Logo\" class=\"logo\" v-if=\"props.team2Logo\" />\n          </div>\n        </div>\n      ",
+    "css": "\n        .scoreboard {\n          display: flex;\n          align-items: center;\n          justify-content: center;\n          font-family: 'Arial', sans-serif;\n          color: white;\n          background-color: rgba(29, 38, 51, 0.8);\n          border-radius: 10px;\n          padding: 10px 20px;\n          font-size: 24px;\n        }\n        .team {\n          display: flex;\n          align-items: center;\n        }\n        .name {\n          font-weight: bold;\n          margin: 0 15px;\n        }\n        .score {\n          background-color: rgba(0, 0, 0, 0.2);\n          padding: 5px 15px;\n          border-radius: 5px;\n          font-weight: bold;\n        }\n        .separator {\n          margin: 0 15px;\n          font-weight: bold;\n        }\n        .logo {\n          width: 40px;\n          height: 40px;\n          object-fit: contain;\n        }\n      ",
+    "js": null,
+    "positionX": 560,
+    "positionY": 20,
+    "container": [
+      800,
+      60
+    ]
+  }
+}

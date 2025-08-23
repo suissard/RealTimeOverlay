@@ -1,0 +1,24 @@
+{
+  "name": "Sponsor Carousel",
+  "type": "sponsor_carousel",
+  "initialData": {
+    "name": "Sponsors",
+    "props": {
+      "sponsors": [
+        "https://via.placeholder.com/150/FF0000/FFFFFF?text=Sponsor+1",
+        "https://via.placeholder.com/150/00FF00/FFFFFF?text=Sponsor+2",
+        "https://via.placeholder.com/150/0000FF/FFFFFF?text=Sponsor+3"
+      ],
+      "duration": 3000
+    },
+    "html": "\n        <div class=\"sponsor-carousel\">\n          <img id=\"sponsor-img\" src=\"\" alt=\"Sponsor\" />\n        </div>\n      ",
+    "css": "\n        .sponsor-carousel {\n          display: flex;\n          align-items: center;\n          justify-content: center;\n          overflow: hidden;\n        }\n        #sponsor-img {\n          width: 100%;\n          height: 100%;\n          object-fit: contain;\n          opacity: 0;\n          transition: opacity 0.5s ease-in-out;\n        }\n        #sponsor-img.visible {\n          opacity: 1;\n        }\n      ",
+    "js": "\n        let currentIndex = 0;\n        const sponsors = window.overlayProps.sponsors;\n        const duration = window.overlayProps.duration || 3000;\n        const imgElement = document.getElementById('sponsor-img');\n\n        function showNextSponsor() {\n          if (!sponsors || sponsors.length === 0) return;\n\n          imgElement.classList.remove('visible');\n\n          setTimeout(() => {\n            currentIndex = (currentIndex + 1) % sponsors.length;\n            imgElement.src = sponsors[currentIndex];\n            imgElement.classList.add('visible');\n          }, 500); // Wait for fade out\n        }\n\n        if (sponsors && sponsors.length > 0) {\n            imgElement.src = sponsors[0];\n            imgElement.classList.add('visible');\n            setInterval(showNextSponsor, duration);\n        }\n      ",
+    "positionX": 810,
+    "positionY": 950,
+    "container": [
+      300,
+      80
+    ]
+  }
+}

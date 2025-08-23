@@ -32,6 +32,51 @@ vi.mock('vue-router', () => ({
   useRoute: vi.fn(() => mockUseRoute)
 }));
 
+vi.mock('@/lib/presets', () => ({
+  presets: [
+    {
+      name: 'Score Bar',
+      type: 'score_bar',
+      initialData: {
+        name: 'Score Bar',
+        props: {
+          team1Name: 'Team A',
+          team2Name: 'Team B',
+          team1Score: 0,
+          team2Score: 0,
+          team1Logo: '',
+          team2Logo: '',
+          backgroundColor: 'rgba(29, 38, 51, 0.8)',
+          textColor: '#ffffff',
+        },
+        html: `<div>Scoreboard</div>`,
+        css: ``,
+        js: null,
+        positionX: 560,
+        positionY: 20,
+        container: [800, 60],
+      },
+    },
+    {
+      name: 'Sponsor Carousel',
+      type: 'sponsor_carousel',
+      initialData: {
+        name: 'Sponsors',
+        props: {
+          sponsors: [],
+          duration: 3000,
+        },
+        html: `<div>Sponsors</div>`,
+        css: ``,
+        js: ``,
+        positionX: 810,
+        positionY: 950,
+        container: [300, 80],
+      },
+    },
+  ]
+}));
+
 describe('RemoteView.vue', () => {
   let mainStore;
   let wrapper;
