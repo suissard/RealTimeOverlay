@@ -1,0 +1,40 @@
+{
+  "name": "Example Screen 2",
+  "id": "example-screen-2",
+  "type": "screen",
+  "overlays": [
+    {
+      "name": "Map Display",
+      "id": "map-display-1",
+      "positionX": 1300,
+      "positionY": 50,
+      "container": [600, 450],
+      "parent": null,
+      "props": {
+        "mapName": "World Map",
+        "mapImageUrl": "https://via.placeholder.com/800x600.png?text=Map"
+      },
+      "html": "<div class=\"map-display\"><h3 class=\"map-name\">{{ props.mapName }}</h3><img :src=\"props.mapImageUrl\" class=\"map-image\" /></div>",
+      "css": ".map-display { width: 100%; height: 100%; background-color: #1f2937; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; align-items: center; box-sizing: border-box; } .map-name { color: white; font-family: sans-serif; font-size: 22px; font-weight: bold; margin-bottom: 10px; } .map-image { max-width: 100%; max-height: calc(100% - 40px); object-fit: contain; }",
+      "js": null
+    },
+    {
+      "name": "Sponsor Carousel",
+      "id": "sponsor-carousel-1",
+      "positionX": 50,
+      "positionY": 950,
+      "container": [1820, 80],
+      "parent": null,
+      "props": {
+        "sponsors": [
+          "https://via.placeholder.com/150x50.png?text=Sponsor+1",
+          "https://via.placeholder.com/150x50.png?text=Sponsor+2",
+          "https://via.placeholder.com/150x50.png?text=Sponsor+3"
+        ]
+      },
+      "html": "<div class=\"sponsor-carousel\"><div class=\"sponsor-track\"></div></div>",
+      "css": ".sponsor-carousel { width: 100%; height: 100%; overflow: hidden; } .sponsor-track { display: flex; animation: scroll 20s linear infinite; } .sponsor-track img { height: 50px; margin: 0 20px; } @keyframes scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }",
+      "js": "const track = document.querySelector('.sponsor-track'); const sponsors = this.props.sponsors; sponsors.forEach(url => { const img = document.createElement('img'); img.src = url; track.appendChild(img); });"
+    }
+  ]
+}

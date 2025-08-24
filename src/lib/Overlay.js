@@ -44,6 +44,21 @@ class Overlay {
     this.css = css;
     this.js = js;
   }
+
+  toJSON() {
+    return {
+      name: this.name,
+      id: this.id,
+      positionX: this.positionX,
+      positionY: this.positionY,
+      container: this.container,
+      parent: this.parent,
+      props: this.props,
+      html: this.html,
+      css: this.css,
+      js: this.js,
+    };
+  }
 }
 
 export default Overlay;
