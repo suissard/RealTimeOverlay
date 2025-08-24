@@ -21,6 +21,9 @@ export const useMainStore = defineStore('main', {
   },
 
   actions: {
+    /**
+     * Génère un ID de salon aléatoire.
+     */
     generateRoomId() {
       this.roomId = 'xxxx-xxxx-xxxx-xxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -28,6 +31,11 @@ export const useMainStore = defineStore('main', {
       });
     },
 
+    /**
+     * Se connecte au serveur de socket et rejoint un salon.
+     * @param {string} roomId - L'ID du salon à rejoindre.
+     * @param {boolean} [isRemote=false] - Si l'utilisateur est un utilisateur distant.
+     */
    connect(roomId, isRemote = false) {
       this.isRemote = isRemote;
       this.socket = io('http://localhost:3000');
@@ -74,6 +82,10 @@ export const useMainStore = defineStore('main', {
       });
     },
 
+    /**
+     * Envoie un message au salon.
+     * @param {string} message - Le message à envoyer.
+     */
     sendMessage(message) {
       if (this.socket && this.roomId) {
         const payload = { room: this.roomId, message: { type: 'text', content: message } };
@@ -84,6 +96,10 @@ export const useMainStore = defineStore('main', {
       }
     },
 
+    /**
+     * Envoie un overlay au salon.
+     * @param {object} overlay - L'overlay à envoyer.
+     */
     sendOverlay(overlay) {
       if (this.socket && this.room) {
         const payload = { room: this.room.id, message: { type: 'overlay', content: overlay } };
@@ -94,6 +110,10 @@ export const useMainStore = defineStore('main', {
       }
     },
 
+    /**
+     * Gère les slots dans le salon.
+     * @param {string} action - L'action à effectuer.
+     */
     manageSlots(action) {
       if (this.socket && this.roomId) {
         const payload = { roomId: this.roomId, action };
