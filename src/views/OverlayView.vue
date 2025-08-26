@@ -5,7 +5,7 @@
 
     <!-- If no overlay is active, show the connection screen -->
     <div v-else class="flex items-center justify-center h-screen">
-      <div v-if="roomId" class="text-center">
+      <div v-if="room && !room?.users.find(u=>u.isRemote)" class="text-center">
         <h1 class="text-2xl font-bold mb-4">Overlay Ready</h1>
         <p class="mb-2">Scan this QR code with your remote device to connect.</p>
         <div class="inline-block p-4 bg-white rounded-lg">
@@ -37,7 +37,7 @@ const router = useRouter();
 const mainStore = useMainStore();
 
 // Reactive state from the store
-const { message, roomId } = storeToRefs(mainStore);
+const { message, roomId, room } = storeToRefs(mainStore);
 
 // Local state
 const activeOverlay = ref(null);
