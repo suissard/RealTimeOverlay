@@ -1,7 +1,8 @@
 <template>
-  <div class="fake-screen" ref="fakeScreenRef" :class="$attrs.class">
+  <div class="fake-screen" :class="$attrs.class">
     <VisualOverlay
-      v-if="overlay"
+      v-for="overlay in overlays"
+      :key="overlay.id"
       :overlay="overlay"
       @update:overlay="onOverlayUpdate"
     >
@@ -11,20 +12,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import VisualOverlay from './VisualOverlay.vue';
 import OverlayObject from './OverlayObject.vue';
 
-const props = defineProps({
-  overlay: {
-    type: Object,
-    default: null,
+defineProps({
+  overlays: {
+    type: Array,
+    default: () => [],
   },
 });
 
 const emit = defineEmits(['update:overlay']);
-
-const fakeScreenRef = ref(null);
 
 const onOverlayUpdate = (updatedOverlay) => {
   emit('update:overlay', updatedOverlay);

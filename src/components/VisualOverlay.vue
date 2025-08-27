@@ -4,13 +4,12 @@
     :style="style"
     @mousedown="onMouseDown"
   >
-    <div class="resizable-handle" @mousedown.stop="onResizeMouseDown"></div>
     <slot></slot>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps({
   overlay: {
@@ -50,42 +49,11 @@ const onMouseDown = (event) => {
   document.addEventListener('mousemove', onMouseMove);
   document.addEventListener('mouseup', onMouseUp);
 };
-
-const onResizeMouseDown = (event) => {
-  const startX = event.clientX;
-  const startY = event.clientY;
-  const startWidth = props.overlay.container[0];
-  const startHeight = props.overlay.container[1];
-
-  const onMouseMove = (moveEvent) => {
-    const newWidth = startWidth + moveEvent.clientX - startX;
-    const newHeight = startHeight + moveEvent.clientY - startY;
-    emit('update:overlay', { ...props.overlay, container: [newWidth, newHeight] });
-  };
-
-  const onMouseUp = () => {
-    document.removeEventListener('mousemove', onMouseMove);
-    document.removeEventListener('mouseup', onMouseUp);
-  };
-
-  document.addEventListener('mousemove', onMouseMove);
-  document.addEventListener('mouseup', onMouseUp);
-};
 </script>
 
 <style scoped>
 .visual-overlay {
   position: absolute;
-  border: 1px dashed #ccc;
-}
-
-.resizable-handle {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 10px;
-  height: 10px;
-  background-color: #333;
-  cursor: se-resize;
+  border: 2px solid red;
 }
 </style>
