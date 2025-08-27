@@ -21,7 +21,7 @@ const renderedHtml = computed(() => {
   // Replace all {{key}} with the value from props
   for (const [key, value] of Object.entries(props.overlay.props)) {
     // Handle both {{key}} and {{ key }}
-    const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+    const regex = new RegExp(`{{ +props\.${key} +}}`, 'g');
     html = html.replace(regex, value);
   }
 
