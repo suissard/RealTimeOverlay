@@ -12,7 +12,17 @@ const io = new Server(server, {
 
 app.use(express.static('public'));
 
+app.get('/history', (req, res) => {
+  res.json(history);
+});
+
+app.get('/history/clear', (req, res) => {
+  history.length = 0;
+  res.send('History cleared');
+});
+
 const rooms = {};
+const history = [];
 
 io.on('connection', (socket) => {
   console.log(`A user connected: ${socket.id}`);
@@ -38,6 +48,14 @@ io.on('connection', (socket) => {
 
   socket.on('control_message', (data) => {
     console.log(`Message received for room ${data.room}: ${data.message}`);
+
+    history.push({
+      user: socket.id,
+      timestamp: new Date(),
+      room: data.room,
+      message: data.message,
+    });
+
     // Broadcast to the room, excluding the sender
     socket.to(data.room).emit('control_message', data.message);
   });

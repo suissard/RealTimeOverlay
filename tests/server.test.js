@@ -1,6 +1,9 @@
-import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from 'vitest';
 import { spawn } from 'child_process';
 import { io } from 'socket.io-client';
+import axios from 'axios';
+
+let clients = [];
 
 const createClient = () => {
     return new Promise((resolve) => {
@@ -9,6 +12,7 @@ const createClient = () => {
             forceNew: true,
         });
         socket.on('connect', () => {
+            clients.push(socket);
             resolve(socket);
         });
     });
@@ -37,6 +41,17 @@ describe('Server tests', () => {
     }
   });
 
+  beforeEach(async () => {
+    // Clear history before each test
+    await axios.get('http://localhost:3000/history/clear');
+    clients = [];
+  });
+
+  afterEach(() => {
+    // Disconnect all clients after each test
+    clients.forEach(socket => socket.disconnect());
+  });
+
 
   it('should allow a user to join a room', async () => {
     const clientSocket = await createClient();
@@ -52,7 +67,6 @@ describe('Server tests', () => {
 
     clientSocket.emit('join', { roomId, isRemote: false });
     await joinPromise;
-    clientSocket.disconnect();
   });
 
   it('should broadcast a control message to other users in the room', async () => {
@@ -91,8 +105,6 @@ describe('Server tests', () => {
     client1.emit('control_message', { room: roomId, message: 'hello' });
 
     await messagePromise;
-    client1.disconnect();
-    client2.disconnect();
   });
 
   it('should notify other users when a user disconnects', async () => {
@@ -132,6 +144,37 @@ describe('Server tests', () => {
     client2.disconnect();
 
     await disconnectPromise;
-    client1.disconnect();
   });
+
+  it('should record control messages in history and expose it via /history', async () => {
+    const client = await createClient();
+    const roomId = 'test-room-history';
+    const message = { text: 'test-message' };
+
+    // Join room
+    const joinPromise = new Promise(resolve => {
+        client.once('room_joined', () => resolve());
+    });
+    client.emit('join', { roomId, isRemote: false });
+    await joinPromise;
+
+    // Send control message
+    client.emit('control_message', { room: roomId, message });
+
+    // Allow some time for the server to process the message and update history
+    await new Promise(resolve => setTimeout(resolve, 200));
+
+    // Fetch history
+    const response = await axios.get('http://localhost:3000/history');
+    const history = response.data;
+
+    // Assertions
+    expect(history).toBeInstanceOf(Array);
+    expect(history.length).toBeGreaterThan(0);
+    const lastEntry = history[history.length - 1];
+    expect(lastEntry.user).toBe(client.id);
+    expect(lastEntry.room).toBe(roomId);
+    expect(lastEntry.message).toEqual(message);
+    expect(lastEntry.timestamp).toBeDefined();
+  }, 10000);
 });
