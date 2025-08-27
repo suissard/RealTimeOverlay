@@ -22,6 +22,7 @@ const error = ref(null)
 const newOverlayName = ref('')
 const selectedOverlayId = ref(null)
 const selectedPresetType = ref(presets.length > 0 ? presets[0].type : null)
+const currentTab = ref('general')
 
 const hasOverlay = computed(() => {
   if (!room.value) return false
@@ -69,12 +70,14 @@ const createOverlay = () => {
 const deleteOverlay = (id) => {
   if (selectedOverlayId.value === id) {
     selectedOverlayId.value = null
+    currentTab.value = 'general'
   }
   overlayStore.removeOverlay(id)
 }
 
 const selectOverlay = (id) => {
   selectedOverlayId.value = id
+  currentTab.value = 'editor'
 }
 
 const handleOverlayUpdate = (updatedOverlay) => {
@@ -114,24 +117,26 @@ const sendAllOverlays = () => {
         <div class="md:col-span-2 space-y-4">
           <h2 class="text-xl font-bold">Screen View</h2>
           <div class="bg-base-200 rounded-box flex justify-center items-center aspect-video overflow-hidden">
-            <FakeScreen class="w-[1920px] h-[1080px] transform scale-[0.3] origin-center">
-              <VisualOverlay
-                v-for="overlay in overlays"
-                :key="overlay.id"
-                :overlay="overlay"
-                @update:overlay="handleOverlayUpdate"
-              >
-                <OverlayObject :overlay="overlay" />
-              </VisualOverlay>
-            </FakeScreen>
+            <FakeScreen
+              class="w-[1920px] h-[1080px] transform scale-[0.3] origin-center"
+              :overlays="overlays"
+              @update:overlay="handleOverlayUpdate"
+            />
           </div>
            <button @click="sendAllOverlays" class="btn btn-primary w-full">Send All Overlays to Room</button>
         </div>
 
         <!-- Editor Panel (Right Column) -->
         <div class="md:col-span-1 space-y-4">
-           <div class="space-y-4 p-4 border border-base-300 rounded-box">
-              <h2 class="text-xl font-bold">Create New</h2>
+          <div role="tablist" class="tabs tabs-boxed">
+            <a role="tab" class="tab" :class="{'tab-active': currentTab === 'general'}" @click="currentTab = 'general'">General</a>
+            <a role="tab" class="tab" :class="{'tab-active': currentTab === 'editor', 'tab-disabled': !selectedOverlay}" @click="selectedOverlay && (currentTab = 'editor')">Editor</a>
+          </div>
+
+          <!-- General Tab Content -->
+          <div v-if="currentTab === 'general'" class="space-y-4">
+            <div class="p-4 border border-base-300 rounded-box">
+              <h2 class="text-xl font-bold mb-2">Create New</h2>
               <form @submit.prevent="createOverlay" class="space-y-2">
                 <div class="form-control">
                   <label for="presetType" class="label"><span class="label-text">Preset</span></label>
@@ -158,8 +163,8 @@ const sendAllOverlays = () => {
             <div class="divider"></div>
 
             <!-- List of Overlays -->
-            <div class="space-y-2">
-               <h2 class="text-xl font-bold">Overlays</h2>
+            <div>
+              <h2 class="text-xl font-bold mb-2">Overlays</h2>
               <ul class="menu bg-base-200 rounded-box">
                 <li v-for="overlay in overlays" :key="overlay.id">
                   <a @click="selectOverlay(overlay.id)" :class="{ 'active': selectedOverlayId === overlay.id }" class="flex justify-between items-center">
@@ -169,15 +174,17 @@ const sendAllOverlays = () => {
                 </li>
               </ul>
             </div>
+          </div>
 
-            <div class="divider"></div>
-
+          <!-- Editor Tab Content -->
+          <div v-if="currentTab === 'editor'" class="space-y-4">
             <div v-if="selectedOverlay">
               <OverlayEditor :overlay="selectedOverlay" />
             </div>
             <div v-else class="text-center p-8 bg-base-200 rounded-box h-full flex items-center justify-center">
-              <p>Select an overlay to edit, or create a new one.</p>
+              <p>Select an overlay to edit. Go to the "General" tab to see the list of overlays.</p>
             </div>
+          </div>
         </div>
       </div>
     </div>

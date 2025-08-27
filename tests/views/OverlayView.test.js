@@ -65,6 +65,7 @@ describe('OverlayView.vue', () => {
     const wrapper = mount(OverlayView);
     // Manually update the store state for the test
     mainStore.roomId = roomId;
+    mainStore.room = { users: [] }; // Mock a room with no remote users
 
     await nextTick();
 
