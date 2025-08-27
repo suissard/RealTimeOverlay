@@ -7,6 +7,8 @@ import { storeToRefs } from 'pinia'
 import { throttle, cloneDeep } from 'lodash'
 import OverlayEditor from '@/components/OverlayEditor.vue'
 import FakeScreen from '@/components/FakeScreen.vue'
+import VisualOverlay from '@/components/VisualOverlay.vue'
+import OverlayObject from '@/components/OverlayObject.vue'
 import { presets } from '@/lib/presets'
 
 const route = useRoute()
@@ -18,7 +20,6 @@ const { overlays } = storeToRefs(overlayStore)
 
 const error = ref(null)
 const newOverlayName = ref('')
-const activeTab = ref('editor') // Default to editor tab
 const selectedOverlayId = ref(null)
 const selectedPresetType = ref(presets.length > 0 ? presets[0].type : null)
 
@@ -41,13 +42,6 @@ onMounted(() => {
   }
 })
 
-const onInput = throttle((event) => {
-  mainStore.sendMessage(event.target.value)
-}, 300)
-
-function manageSlots(action) {
-  mainStore.manageSlots(action)
-}
 const createOverlay = () => {
   const selectedPreset = presets.find(p => p.type === selectedPresetType.value)
   if (!selectedPreset) {
@@ -86,6 +80,12 @@ const selectOverlay = (id) => {
 const handleOverlayUpdate = (updatedOverlay) => {
   overlayStore.updateOverlay(updatedOverlay.id, updatedOverlay)
 }
+
+const sendAllOverlays = () => {
+  overlays.value.forEach(overlay => {
+    mainStore.sendOverlay(overlay)
+  })
+}
 </script>
 
 <template>
@@ -109,32 +109,28 @@ const handleOverlayUpdate = (updatedOverlay) => {
         </div>
       </div>
 
-      <div class="tabs tabs-boxed">
-        <a class="tab" :class="{ 'tab-active': activeTab === 'general' }" @click="activeTab = 'general'">General</a>
-        <a class="tab" :class="{ 'tab-active': activeTab === 'editor' }" @click="activeTab = 'editor'">Editor</a>
-      </div>
-
-      <div v-show="activeTab === 'general'">
-        <div v-if="hasOverlay" class="controls space-y-2">
-          <input
-            type="text"
-            class="input input-bordered w-full"
-            placeholder="Message"
-            @input="onInput"
-          />
-          <div class="flex gap-2">
-            <button class="btn btn-primary" @click="manageSlots('add')">Add Slot</button>
-            <button class="btn btn-secondary" @click="manageSlots('remove')">Remove Slot</button>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Screen View (Left Column) -->
+        <div class="md:col-span-2 space-y-4">
+          <h2 class="text-xl font-bold">Screen View</h2>
+          <div class="bg-base-200 rounded-box flex justify-center items-center aspect-video overflow-hidden">
+            <FakeScreen class="w-[1920px] h-[1080px] transform scale-[0.3] origin-center">
+              <VisualOverlay
+                v-for="overlay in overlays"
+                :key="overlay.id"
+                :overlay="overlay"
+                @update:overlay="handleOverlayUpdate"
+              >
+                <OverlayObject :overlay="overlay" />
+              </VisualOverlay>
+            </FakeScreen>
           </div>
+           <button @click="sendAllOverlays" class="btn btn-primary w-full">Send All Overlays to Room</button>
         </div>
-      </div>
 
-      <div v-show="activeTab === 'editor'" class="space-y-4">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Left Column: Create and List -->
-          <div class="md:col-span-1 space-y-4">
-            <!-- Create New Overlay -->
-            <div class="space-y-4 p-4 border border-base-300 rounded-box">
+        <!-- Editor Panel (Right Column) -->
+        <div class="md:col-span-1 space-y-4">
+           <div class="space-y-4 p-4 border border-base-300 rounded-box">
               <h2 class="text-xl font-bold">Create New</h2>
               <form @submit.prevent="createOverlay" class="space-y-2">
                 <div class="form-control">
@@ -173,29 +169,15 @@ const handleOverlayUpdate = (updatedOverlay) => {
                 </li>
               </ul>
             </div>
-          </div>
 
-          <!-- Right Column: Editor -->
-          <div class="md:col-span-2 grid grid-rows-2 gap-4">
-            <div class="bg-base-200 rounded-box p-4 flex justify-center items-center">
-              <div class="aspect-video w-full max-w-full overflow-hidden">
-                <div class="transform scale-25 -translate-x-[150%] -translate-y-[150%]">
-                  <FakeScreen
-                    v-if="selectedOverlay"
-                    :overlay="selectedOverlay"
-                    @update:overlay="handleOverlayUpdate"
-                    class="w-[1920px] h-[1080px]"
-                  />
-                </div>
-              </div>
-            </div>
+            <div class="divider"></div>
+
             <div v-if="selectedOverlay">
               <OverlayEditor :overlay="selectedOverlay" />
             </div>
             <div v-else class="text-center p-8 bg-base-200 rounded-box h-full flex items-center justify-center">
               <p>Select an overlay to edit, or create a new one.</p>
             </div>
-          </div>
         </div>
       </div>
     </div>
