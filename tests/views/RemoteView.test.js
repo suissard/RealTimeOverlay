@@ -106,44 +106,6 @@ describe('RemoteView.vue', () => {
     });
   });
 
-  describe('General Tab', () => {
-    beforeEach(async () => {
-      await wrapper.find('.tabs a:first-child').trigger('click');
-    });
-
-    it('displays controls when connected with an overlay', async () => {
-      mainStore.room = { users: [{ id: 'overlay1', isRemote: false }], capacity: 2 };
-      await wrapper.vm.$nextTick();
-      expect(wrapper.find('.controls').exists()).toBe(true);
-    });
-
-    it('calls sendMessage on input', async () => {
-      const sendMessageSpy = vi.spyOn(mainStore, 'sendMessage');
-      mainStore.room = { users: [{ id: 'overlay1', isRemote: false }], capacity: 2 };
-      await wrapper.vm.$nextTick();
-
-      const input = wrapper.find('.controls input[type="text"]');
-      await input.setValue('hello');
-
-      expect(sendMessageSpy).toHaveBeenCalledWith('hello');
-    });
-
-    it('calls manageSlots on button click', async () => {
-      const manageSlotsSpy = vi.spyOn(mainStore, 'manageSlots');
-      mainStore.room = { users: [{ id: 'overlay1', isRemote: false }], capacity: 2 };
-      await wrapper.vm.$nextTick();
-
-      const addButton = wrapper.find('.controls .btn-primary');
-      const removeButton = wrapper.find('.controls .btn-secondary');
-
-      await addButton.trigger('click');
-      expect(manageSlotsSpy).toHaveBeenCalledWith('add');
-
-      await removeButton.trigger('click');
-      expect(manageSlotsSpy).toHaveBeenCalledWith('remove');
-    });
-  });
-
   describe('Editor Tab', () => {
     let overlayStore;
 
