@@ -1,5 +1,5 @@
 <template>
-  <div class="fake-screen" ref="fakeScreenRef">
+  <div class="fake-screen" ref="fakeScreenRef" :class="$attrs.class">
     <VisualOverlay
       v-if="overlay"
       :overlay="overlay"

@@ -177,12 +177,17 @@ const handleOverlayUpdate = (updatedOverlay) => {
 
           <!-- Right Column: Editor -->
           <div class="md:col-span-2 grid grid-rows-2 gap-4">
-            <div class="bg-base-200 rounded-box">
-              <FakeScreen
-                v-if="selectedOverlay"
-                :overlay="selectedOverlay"
-                @update:overlay="handleOverlayUpdate"
-              />
+            <div class="bg-base-200 rounded-box p-4 flex justify-center items-center">
+              <div class="aspect-video w-full max-w-full overflow-hidden">
+                <div class="transform scale-25 -translate-x-[150%] -translate-y-[150%]">
+                  <FakeScreen
+                    v-if="selectedOverlay"
+                    :overlay="selectedOverlay"
+                    @update:overlay="handleOverlayUpdate"
+                    class="w-[1920px] h-[1080px]"
+                  />
+                </div>
+              </div>
             </div>
             <div v-if="selectedOverlay">
               <OverlayEditor :overlay="selectedOverlay" />

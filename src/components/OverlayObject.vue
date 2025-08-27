@@ -1,5 +1,5 @@
 <template>
-  <div :style="style" v-html="overlay.html"></div>
+  <div :style="style" v-html="renderedHtml"></div>
 </template>
 
 <script setup>
@@ -10,6 +10,22 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+});
+
+const renderedHtml = computed(() => {
+  let html = props.overlay.html;
+  if (!html || !props.overlay.props) {
+    return html;
+  }
+
+  // Replace all {{key}} with the value from props
+  for (const [key, value] of Object.entries(props.overlay.props)) {
+    // Handle both {{key}} and {{ key }}
+    const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+    html = html.replace(regex, value);
+  }
+
+  return html;
 });
 
 const style = computed(() => ({

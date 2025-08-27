@@ -69,6 +69,7 @@ watch(editableOverlay, (newVal) => {
 
 <template>
   <div class="overlay-editor-component p-4 bg-base-100 rounded-lg shadow-lg">
+    <button @click="sendOverlay" class="btn btn-primary w-full btn-lg mb-4 z-10">Send Overlay</button>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="editor-form space-y-4">
         <div>
@@ -134,7 +135,6 @@ watch(editableOverlay, (newVal) => {
           <label class="label">JS</label>
           <textarea v-model="editableOverlay.js" @input="updateOverlay" class="textarea textarea-bordered w-full" rows="5" data-testid="js-input"></textarea>
         </div>
-        <button @click="sendOverlay" class="btn btn-primary w-full">Send Overlay</button>
       </div>
       <div class="preview">
         <h3 class="text-lg font-bold mb-2">Preview</h3>
